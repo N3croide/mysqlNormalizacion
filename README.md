@@ -86,14 +86,14 @@ create table tipo_telefono(
 );
 
 create table telefono(
-	id int auto_increment primary key,
+    id int auto_increment primary key,
     numero int(15) not null,
     prefijo int(5) not null,
     cedula_cliente int(10) null,
     id_tipo_telefono int not null,
     nit_proveedor int(9) null,
     id_oficina int null,
-    constraint FK_id_oficina foreign key(id_oficina) references oficina(id),
+    constraint FK_id_oficina_telefono foreign key(id_oficina) references oficina(id),
     constraint FK_cedula_cliente_telefono foreign key(cedula_cliente) references cliente(cedula),
     constraint FK_nit_proveedor_telefono foreign key(nit_proveedor) references proveedor(nit),
     constraint FK_id_tipo_telefono foreign key(id_tipo_telefono) references tipo_telefono(id)
