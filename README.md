@@ -16,7 +16,33 @@ VALUES
 (690123456, 1, 1, 890123456), -- Teléfono del proveedor Anderson Supplies
 (601234567, 1, 2, 901234567); -- Teléfono del proveedor Taylor & Martinez
 
+-- Inserts de teléfonos para oficinas
+INSERT INTO telefono (numero, prefijo, id_tipo_telefono, id_oficina)
+VALUES 
+(912345678, 34, 1, 1), -- Teléfono de la oficina 1
+(934567890, 34, 2, 2), -- Teléfono de la oficina 2
+(945678901, 34, 1, 3), -- Teléfono de la oficina 3
+(956789012, 34, 2, 4), -- Teléfono de la oficina 4
+(967890123, 34, 1, 5), -- Teléfono de la oficina 5
+(978901234, 34, 2, 6), -- Teléfono de la oficina 6
+(989012345, 34, 1, 7), -- Teléfono de la oficina 7
+(990123456, 34, 2, 8), -- Teléfono de la oficina 8
+(901234567, 34, 1, 9), -- Teléfono de la oficina 9
+(912345678, 34, 2, 10); -- Teléfono de la oficina 10
 
+-- Inserts de teléfonos para clientes
+INSERT INTO telefono (numero, prefijo, cedula_cliente, id_tipo_telefono)
+VALUES 
+(12345678, 57, 1122334455, 1), -- Teléfono de John Doe
+(23456789, 57, 1122334456, 2), -- Teléfono de Jane Smith
+(34567890, 57, 1122334457, 1), -- Teléfono de Michael Johnson
+(45678901, 57, 1122334458, 1), -- Teléfono de Emily Davis
+(56789012, 57, 1122334459, 2), -- Teléfono de William Martinez
+(67890123, 57, 1122334460, 1), -- Teléfono de Sarah Brown
+(78901234, 57, 1122334461, 1), -- Teléfono de David Wilson
+(89012345, 57, 1122334462, 2), -- Teléfono de Olivia Taylor
+(90123456, 57, 1122334463, 1), -- Teléfono de Emma Anderson
+(12345678, 57, 1122334464, 2); -- Teléfono de James Wilson
 
 DDL
 
