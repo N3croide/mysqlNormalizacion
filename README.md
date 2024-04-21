@@ -2,6 +2,22 @@
 ![image](2.png)
 ![image](erd.png)
 
+-- Inserts de teléfonos para proveedores
+INSERT INTO telefono (numero, prefijo, id_tipo_telefono, nit_proveedor)
+VALUES 
+(612345678, 1, 1, 101234567), -- Teléfono del proveedor Johnson Corp.
+(623456789, 1, 2, 123456789), -- Teléfono del proveedor Acme Corporation
+(634567890, 1, 1, 234567890), -- Teléfono del proveedor Smith & Co.
+(645678901, 1, 2, 345678901), -- Teléfono del proveedor Johnson Enterprises
+(656789012, 1, 1, 456789012), -- Teléfono del proveedor Martinez Ltd.
+(667890123, 1, 2, 567890123), -- Teléfono del proveedor Brown Industries
+(678901234, 1, 1, 678901234), -- Teléfono del proveedor Taylor Group
+(689012345, 1, 2, 789012345), -- Teléfono del proveedor Wilson & Sons
+(690123456, 1, 1, 890123456), -- Teléfono del proveedor Anderson Supplies
+(601234567, 1, 2, 901234567); -- Teléfono del proveedor Taylor & Martinez
+
+
+
 DDL
 
 Creacion de la base de datos:
