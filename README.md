@@ -506,6 +506,21 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
    
 
    ```mysql
+   select c.nombre as "Nombre de la Ciudad", CONCAT(t.prefijo," + ",t.numero) as "Numero de Oficina"
+       from ciudad c
+       join oficina o on o.id_ciudad = c.id
+       join telefono t on t.id_oficina = o.id
+       join region r on r.id = c.id_region
+       join pais p on p.id = r.id_pais
+       where p.nombre like "%spana";
+   
+   +---------------------+-------------------+
+   | Nombre de la Ciudad | Numero de Oficina |
+   +---------------------+-------------------+
+   | Madrid              | 34 + 912345678    |
+   | Barcelona           | 34 + 934567890    |
+   +---------------------+-------------------+
+   2 rows in set (0.00 sec)
    
    ```
 
@@ -514,42 +529,99 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
 3. Devuelve un listado con el nombre, apellidos y email de los empleados cuyo
    jefe tiene un código de jefe igual a 7.
 
-   
+  (Profe dado que la PK es la cedula no va a encontrar nada asi que voy a hacer la consulta con una cedula que haya ingresado: 1234567890 )
 
-   ```mysql
-   
-   ```
+  
 
-   
+  ```mysql
+select e.nombre as "Nombre Empleado", concat(e.apellido1,' ',ifnull(apellido2,'')) as "Apellidos Empleado", e.email as Email
+from empleado e
+where e.jefe = "1234567890";
+
++-----------------+--------------------+------------------+
+| Nombre Empleado | Apellidos Empleado | Email            |
++-----------------+--------------------+------------------+
+| María           | López Martínez     | maria@email.com  |
+| Carlos          | Rodríguez Gómez    | carlos@email.com |
+| Ana             | Sánchez García     | ana@email.com    |
+| Luis            | Ruiz Jiménez       | luis@email.com   |
+| Elena           | Pérez Romero       | elena@email.com  |
++-----------------+--------------------+------------------+
+5 rows in set (0.01 sec)
+  ```
+
+  
 
 4. Devuelve el nombre del puesto, nombre, apellidos y email del jefe de la
    empresa.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select e.nombre as "Nombre Empleado", concat(e.apellido1,' ',ifnull(apellido2,'')) as "Apellidos Empleado", e.email as Email
+from empleado e
+where puesto like "gerente";
 
-   
++-----------------+--------------------+----------------+
+| Nombre Empleado | Apellidos Empleado | Email          |
++-----------------+--------------------+----------------+
+| Juan            | González Pérez     | juan@email.com |
++-----------------+--------------------+----------------+
+1 row in set (0.00 sec)
+  ```
+
+  
 
 5. Devuelve un listado con el nombre, apellidos y puesto de aquellos
    empleados que no sean representantes de ventas.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select e.nombre as "Nombre Empleado", concat(e.apellido1,' ',ifnull(apellido2,'')) as "Apellidos Empleado", e.puesto as Puesto
+from empleado e
+where puesto not like "vendedor" or "representante de ventas";
 
-   
++-----------------+--------------------+------------------+
+| Nombre Empleado | Apellidos Empleado | Puesto           |
++-----------------+--------------------+------------------+
+| Juan            | González Pérez     | Gerente          |
+| Carlos          | Rodríguez Gómez    | Asistente        |
+| Ana             | Sánchez García     | Contador         |
+| Pedro           | Martín Fernández   | Desarrollador    |
+| Sara            | Díaz Álvarez       | Analista         |
+| Luis            | Ruiz Jiménez       | Diseñador        |
+| Elena           | Pérez Romero       | Marketing        |
+| Diego           | Gómez Hernández    | Recepcionista    |
+| Laura           | Fernández Díaz     | Recursos Humanos |
++-----------------+--------------------+------------------+
+9 rows in set, 1 warning (0.00 sec)
+  ```
+
+  
 
 6. Devuelve un listado con el nombre de los todos los clientes españoles.
 
    
 
    ```mysql
+   	select c.nombre from cliente c 
+   	join ciudad cd on cd.id = c.id_ciudad
+   	join region r on r.id = cd.id_region
+   	join pais p on p.id = r.id_pais
+   	where p.nombre like "espana";
    
+   +------------------+
+   | nombre           |
+   +------------------+
+   | John Doe         |
+   | Emily Davis      |
+   | David Wilson     |
+   | James Wilson     |
+   | Jane Smith       |
+   | William Martinez |
+   | Olivia Taylor    |
+   +------------------+
    ```
 
    
@@ -557,13 +629,23 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
 7. Devuelve un listado con los distintos estados por los que puede pasar un
    pedido.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select descripcion
+from estado_pedido;
 
-   
++-------------+
+| descripcion |
++-------------+
+| En Proceso  |
+| En Ruta     |
+| Entregado   |
+| Cancelado   |
++-------------+
+  ```
+
+  
 
 8. Devuelve un listado con el código de cliente de aquellos clientes que
    realizaron algún pago en 2008. Tenga en cuenta que deberá eliminar
@@ -572,25 +654,82 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
    • Utilizando la función DATE_FORMAT de MySQL.
    • Sin utilizar ninguna de las funciones anteriores.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+YEAR
+	select distinct c.nombre 
+	from cliente c
+	join pedido p on p.cedula_cliente = c.cedula
+	where year(p.fecha_pedido) = 2008;
+	
 
-   
+	
+	+--------------+
+	| nombre       |
+	+--------------+
+	| David Wilson |
+	| James Wilson |
+	+--------------+
+
+DATE_FORMAT
+
+	select distinct c.nombre
+	from cliente c
+	join pedido p on p.cedula_cliente = c.cedula
+	where date_format(p.fecha_pedido,"%Y") = 2008;
+
+	+--------------+
+	| nombre       |
+	+--------------+
+	| David Wilson |
+	| James Wilson |
+	+--------------+
+
+SIN FUNCIONES ANTERIORES
+
+	select distinct c.nombre
+	from cliente c
+	join pedido p on p.cedula_cliente = c.cedula
+	where p.fecha_pedido like "%2008%";
+
+	+--------------+
+	| nombre       |
+	+--------------+
+	| David Wilson |
+	| James Wilson |
+	+--------------+
+  ```
+
+  
 
 9. Devuelve un listado con el código de pedido, código de cliente, fecha
    esperada y fecha de entrega de los pedidos que no han sido entregados a
    tiempo.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select p.id as "Codigo Pedido",
+p.cedula_cliente as "Cedula Cliente",
+p.fecha_esperada as "Fecha esperada",
+p.fecha_entrega as "Fecha de Entrega"
+from pedido p
+where p.fecha_entrega > p.fecha_esperada;
 
-   
+	+---------------+----------------+----------------+------------------+
+	| Codigo Pedido | Cedula Cliente | Fecha esperada | Fecha de Entrega |
+	+---------------+----------------+----------------+------------------+
+	|             1 |     1122334455 | 2024-04-08     | 2024-04-09       |
+	|             3 |     1122334457 | 2024-04-10     | 2024-04-11       |
+	|             5 |     1122334459 | 2024-04-12     | 2024-04-14       |
+	|             7 |     1122334461 | 2024-04-14     | 2024-04-15       |
+	|             8 |     1122334462 | 2024-04-15     | 2024-04-16       |
+	|            10 |     1122334464 | 2024-04-17     | 2024-04-18       |
+	+---------------+----------------+----------------+------------------+
+  ```
+
+  
 
 10. Devuelve un listado con el código de pedido, código de cliente, fecha
     esperada y fecha de entrega de los pedidos cuya fecha de entrega ha sido al
@@ -603,7 +742,76 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    modificaremos los registros de la tabla para que la consulta nos de resultados.
     
+    update pedido
+    set fecha_entrega = fecha_entrega - 3
+    where id in (1,3); 
+    
+    DATE_ADD
+    
+    	select p.id as "Codigo Pedido",
+    	p.cedula_cliente as "Cedula Cliente",
+    	p.fecha_esperada as "Fecha esperada",
+    	p.fecha_entrega as "Fecha de Entrega"
+    	from pedido p
+    	where date_add(p.fecha_entrega, interval 2 day) = p.fecha_esperada;
+    	
+    	+---------------+----------------+----------------+------------------+
+    	| Codigo Pedido | Cedula Cliente | Fecha esperada | Fecha de Entrega |
+    	+---------------+----------------+----------------+------------------+
+    	|             1 |     1122334455 | 2024-04-08     | 2024-04-06       |
+    	|             3 |     1122334457 | 2024-04-10     | 2024-04-08       |
+    	+---------------+----------------+----------------+------------------+
+    
+    DATEDIFF
+    
+    
+    	select p.id as "Codigo Pedido",
+    	p.cedula_cliente as "Cedula Cliente",
+    	p.fecha_esperada as "Fecha esperada",
+    	p.fecha_entrega as "Fecha de Entrega"
+    	from pedido p
+    	where datediff(p.fecha_esperada, p.fecha_entrega) = 2;
+    	
+    	+---------------+----------------+----------------+------------------+
+    	| Codigo Pedido | Cedula Cliente | Fecha esperada | Fecha de Entrega |
+    	+---------------+----------------+----------------+------------------+
+    	|             1 |     1122334455 | 2024-04-08     | 2024-04-06       |
+    	|             3 |     1122334457 | 2024-04-10     | 2024-04-08       |
+    	+---------------+----------------+----------------+------------------+
+    
+    CON + O -
+    
+    
+    	select p.id as "Codigo Pedido",
+    	p.cedula_cliente as "Cedula Cliente",
+    	p.fecha_esperada as "Fecha esperada",
+    	p.fecha_entrega as "Fecha de Entrega"
+    	from pedido p
+    	where (p.fecha_esperada - p.fecha_entrega) = 2;
+    	
+    	+---------------+----------------+----------------+------------------+
+    	| Codigo Pedido | Cedula Cliente | Fecha esperada | Fecha de Entrega |
+    	+---------------+----------------+----------------+------------------+
+    	|             1 |     1122334455 | 2024-04-08     | 2024-04-06       |
+    	|             3 |     1122334457 | 2024-04-10     | 2024-04-08       |
+    	+---------------+----------------+----------------+------------------+
+    	
+    
+    	select p.id as "Codigo Pedido",
+    	p.cedula_cliente as "Cedula Cliente",
+    	p.fecha_esperada as "Fecha esperada",
+    	p.fecha_entrega as "Fecha de Entrega"
+    	from pedido p
+    	where (p.fecha_entrega + 2) = p.fecha_esperada;
+    	
+    	+---------------+----------------+----------------+------------------+
+    	| Codigo Pedido | Cedula Cliente | Fecha esperada | Fecha de Entrega |
+    	+---------------+----------------+----------------+------------------+
+    	|             1 |     1122334455 | 2024-04-08     | 2024-04-06       |
+    	|             3 |     1122334457 | 2024-04-10     | 2024-04-08       |
+    	+---------------+----------------+----------------+------------------+
     ```
 
     
@@ -613,7 +821,31 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    	alteraremos los registros para que la consulta nos de resultados
     
+    	insert into estado_pedido(descripcion) values ("Rechazado");
+    
+    	update pedido
+    	set id_estado_pedido = 5
+    	where id in (10,9);
+    	
+    	select p.id as "Codigo Pedido",
+    	p.fecha_pedido as "Fecha de Pedido",
+    	p.fecha_entrega as "Fecha de Entrega",
+    	p.fecha_esperada as "Fecha Esperada",
+    	p.comentarios as "Comentarios",
+    	ep.descripcion as "Estado del Pedido",
+    	p.cedula_cliente as "Cedula Cliente"
+    	from pedido p
+    	join estado_pedido ep on ep.id = p.id_estado_pedido
+    	where ep.descripcion = "Rechazado"
+    	
+    	+---------------+-----------------+------------------+----------------+--------------------------------------------------------+-------------------+----------------+
+    | Codigo Pedido | Fecha de Pedido | Fecha de Entrega | Fecha Esperada | Comentarios                                            | Estado del Pedido | Cedula Cliente |
+    +---------------+-----------------+------------------+----------------+--------------------------------------------------------+-------------------+----------------+
+    |    9 | 2024-04-09 | NULL      | 2024-04-16| Productos dañados en tránsito, se solicita reemplazo | Rechazado|     1122334463 |
+    |    10 | 2024-04-10 | 2024-04-18 | 2024-04-17| Pedido estándar                                   | Rechazado|     1122334464 |
+    +---------------+-----------------+------------------+----------------+--------------------------------------------------------+-------------------+----------------+
     ```
 
     
@@ -624,6 +856,31 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    se modifican los registros.
+    	
+    	update pedido
+    	set fecha_pedido = date_sub(fecha_pedido,interval 3 month)
+    	where id in (9,10);
+    
+    	select p.id as "Codigo Pedido",
+    	p.fecha_pedido as "Fecha de Pedido",
+    	p.fecha_entrega as "Fecha de Entrega",
+    	p.fecha_esperada as "Fecha Esperada",
+    	p.comentarios as "Comentarios",
+    	ep.descripcion as "Estado del Pedido",
+    	p.cedula_cliente as "Cedula Cliente",
+    	date_format(p.fecha_pedido, "%M") as mes
+    	from pedido p 
+    	join estado_pedido ep on ep.id = p.id_estado_pedido
+    	where date_format(p.fecha_pedido, "%m") = 1
+    	
+    +---------------+-----------------+------------------+----------------+--------------------------------------------------------+-------------------+----------------+---------+
+    | Codigo Pedido | Fecha de Pedido | Fecha de Entrega | Fecha Esperada | | Estado del Pedido | Cedula Cliente | mes     |
+    +---------------+-----------------+------------------+----------------+--------------------------------------------------------+-------------------+----------------+---------+
+    |            10 | 2008-01-10      | 2024-04-18       | 2024-04-17     | Pedido estándar                                        | En Proceso        |     1122334464 | January |
+    |             9 | 2024-01-09      | NULL             | 2024-04-16     | Productos dañados en tránsito, se solicita reemplazo   | Entregado         |     1122334463 | January |
+    +---------------+-----------------+------------------+----------------+--------------------------------------------------------+-------------------+----------------+---------+
+    
     
     ```
 
@@ -635,7 +892,25 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    	update pago
+    	set id_tipo_pago = 4, fecha = date_sub(fecha, interval 16 year)
+    	where cedula_cliente in (1122334464, 1122334460);
     
+    	select p.id as "Codigo Pago",
+    	p.fecha as "Fecha Pago",
+    	p.total as "Total del Pago",
+    	p.cedula_cliente as "Cedula del Cliente",
+    	tp.descripcion as "Tipo pago"
+    	from pago p
+    	join tipo_pago tp on tp.id = p.id_tipo_pago
+    	where tp.descripcion like ("paypal") and date_format(p.fecha,"%Y") = 2008
+    
+    +-------------+------------+----------------+--------------------+-----------+
+    | Codigo Pago | Fecha Pago | Total del Pago | Cedula del Cliente | Tipo pago |
+    +-------------+------------+----------------+--------------------+-----------+
+    |           6 | 2008-04-15 |            400 |         1122334460 | PayPal    |
+    |          10 | 2008-04-11 |             50 |         1122334464 | PayPal    |
+    +-------------+------------+----------------+--------------------+-----------+
     ```
 
     
@@ -647,7 +922,19 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    select tp.id as "Codigo Forma de Pago", 
+    tp.descripcion as "Tipo de pago"
+    from tipo_pago tp;
     
+    +----------------------+------------------------+
+    | Codigo Forma de Pago | Tipo de pago           |
+    +----------------------+------------------------+
+    |                    1 | Efectivo               |
+    |                    2 | Tarjeta de Crédito     |
+    |                    3 | Transferencia Bancaria |
+    |                    4 | PayPal                 |
+    |                    5 | Cheque                 |
+    +----------------------+------------------------+
     ```
 
     
@@ -660,7 +947,29 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    Voy a cambiar la gamma de ornamentales por electronica
+    	
+    	select p.nombre as "Nombre Producto",
+    	(ifnull(p.descripcion,"Sin desc")) as "Descripcion Producto",
+    	p.precio_venta as "Precio de venta",
+    	p.precio_proveedor as "Precio de Compra",
+    	g.descripcion_txt as "Gamma Producto",
+    	(concat(d.largo," x ",d.ancho, ifnull(concat(" x ",d.alto),""))) as "Dimensiones",
+    	i.stock_actual as "Disponibles"
+    	from producto p
+    	join gamma_producto g on g.id = p.id_gamma_producto
+    	join dimensiones d on d.id = p.id_dimensiones
+    	join inventario i on i.id_producto = p.id
+    	where g.descripcion_txt like ("electronica")
+    	and i.stock_actual > 100
+    	order by p.precio_venta desc;
     
+    +-----------------+---------------------------------------+-----------------+------------------+----------------+-------------+-------------+
+    | Nombre Producto | Descripcion Producto | Precio de venta | Precio de Compra | Gamma Producto | Dimensiones | Disponibles |
+    +-----------------+---------------------------------------+-----------------+------------------+----------------+-------------+-------------+
+    | Impresora HP    | Impresora multifuncional inalámbrica |   300 |           200 | Electrónica    | 10 x 20 x 5 |         150 |
+    | Teclado Razer   | Teclado mecánico para gaming         |   120 |            90 | Electrónica    | 10 x 20 x 5 |         250 |
+    +-----------------+---------------------------------------+-----------------+------------------+----------------+-------------+-------------+
     ```
 
     
@@ -671,7 +980,19 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    reemplazare el cod del empleado con su cedula (1234567893 o 1234567898)
     
+    select c.cedula as "Cedula", c.nombre as "Nombre", c.linea_d1 as "Direccion 1", c.linea_d2 as  "Direccion 2", cd.nombre, c.cedula_empleado as "Representante Asignado"
+    from cliente c
+    join ciudad cd on cd.id = c.id_ciudad
+    where c.cedula_empleado in (1234567893,1234567898);
+    
+    +------------+---------------+-------------+-------------+--------+------------------------+
+    | Cedula     | Nombre        | Direccion 1 | Direccion 2 | nombre | Representante Asignado |
+    +------------+---------------+-------------+-------------+--------+------------------------+
+    | 1122334458 | Emily Davis   | Calle 012   | Oficina 7   | Madrid |             1234567893 |
+    | 1122334463 | Emma Anderson | Calle UVW   | Piso 8      | París  |             1234567898 |
+    +------------+---------------+-------------+-------------+--------+------------------------+
     ```
 
     
@@ -683,66 +1004,150 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
 1. Obtén un listado con el nombre de cada cliente y el nombre y apellido de su
    representante de ventas.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select c.nombre as "Nombre Cliente", e.nombre as "Nombre Representante", concat(e.apellido1,' ',ifnull(e.apellido2,'')) as "Apellidos Representante"
+from cliente c
+join empleado e on e.cedula = c.cedula_empleado;
 
-   
++------------------+----------------------+-------------------------+
+| Nombre Cliente   | Nombre Representante | Apellidos Representante |
++------------------+----------------------+-------------------------+
+| John Doe         | Juan                 | González Pérez          |
+| Jane Smith       | María                | López Martínez          |
+| Michael Johnson  | Carlos               | Rodríguez Gómez         |
+| Emily Davis      | Ana                  | Sánchez García          |
+| William Martinez | Pedro                | Martín Fernández        |
+| Sarah Brown      | Sara                 | Díaz Álvarez            |
+| David Wilson     | Luis                 | Ruiz Jiménez            |
+| Olivia Taylor    | Elena                | Pérez Romero            |
+| Emma Anderson    | Diego                | Gómez Hernández         |
+| James Wilson     | Laura                | Fernández Díaz          |
++------------------+----------------------+-------------------------+
+  ```
+
+  
 
 2. Muestra el nombre de los clientes que hayan realizado pagos junto con el
    nombre de sus representantes de ventas.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select c.nombre as "Nombre Cliente", e.nombre as 'Nombre Representate', concat(e.apellido1,' ',ifnull(e.apellido2,'')) as 'Apellidos Representante'
+from cliente c
+join empleado e on e.cedula = c.cedula_empleado
+join pago p on p.cedula_cliente = c.cedula;
 
-   
++------------------+---------------------+-------------------------+
+| Nombre Cliente   | Nombre Representate | Apellidos Representante |
++------------------+---------------------+-------------------------+
+| John Doe         | Juan                | González Pérez          |
+| Jane Smith       | María               | López Martínez          |
+| Michael Johnson  | Carlos              | Rodríguez Gómez         |
+| Emily Davis      | Ana                 | Sánchez García          |
+| William Martinez | Pedro               | Martín Fernández        |
+| Sarah Brown      | Sara                | Díaz Álvarez            |
+| David Wilson     | Luis                | Ruiz Jiménez            |
+| Olivia Taylor    | Elena               | Pérez Romero            |
+| Emma Anderson    | Diego               | Gómez Hernández         |
+| James Wilson     | Laura               | Fernández Díaz          |
++------------------+---------------------+-------------------------+
+  ```
+
+  
 
 3. Muestra el nombre de los clientes que no hayan realizado pagos junto con
    el nombre de sus representantes de ventas.
 
-   
+ 
 
-   ```mysql
-   
-   ```
+  ```mysql
+delete from pago where cedula_cliente = 1122334455;
 
-   
+select c.nombre as "Nombre Cliente", e.nombre as 'Nombre Representate', concat(e.apellido1,' ',ifnull(e.apellido2,'')) as 'Apellidos Representante'
+from cliente c
+join empleado e on e.cedula = c.cedula_empleado
+where c.cedula not in (select p.cedula_cliente from pago p);
+
++----------------+---------------------+-------------------------+
+| Nombre Cliente | Nombre Representate | Apellidos Representante |
++----------------+---------------------+-------------------------+
+| John Doe       | Juan                | González Pérez          |
++----------------+---------------------+-------------------------+
+  ```
+
+  
 
 4. Devuelve el nombre de los clientes que han hecho pagos y el nombre de sus
    representantes junto con la ciudad de la oficina a la que pertenece el
    representante.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select c.nombre as "Nombre Cliente", e.nombre as 'Nombre Representate', concat(e.apellido1,' ',ifnull(e.apellido2,'')) as 'Apellidos Representante', cd.nombre
+from cliente c
+join empleado e on e.cedula = c.cedula_empleado
+join oficina o on e.id_oficina = o.id
+join ciudad cd on cd.id = o.id_ciudad
+join pagos p on p.cedula_cliente = c.cedula;
 
-   
++------------------+---------------------+-------------------------+------------------+
+| Nombre Cliente   | Nombre Representate | Apellidos Representante | Nombre ciudad    |
++------------------+---------------------+-------------------------+------------------+
+| John Doe         | Juan                | González Pérez          | Madrid           |
+| Jane Smith       | María               | López Martínez          | Barcelona        |
+| Michael Johnson  | Carlos              | Rodríguez Gómez         | Madrid           |
+| Emily Davis      | Ana                 | Sánchez García          | Barcelona        |
+| William Martinez | Pedro               | Martín Fernández        | Madrid           |
+| Sarah Brown      | Sara                | Díaz Álvarez            | Barcelona        |
+| David Wilson     | Luis                | Ruiz Jiménez            | Madrid           |
+| Olivia Taylor    | Elena               | Pérez Romero            | Barcelona        |
+| Emma Anderson    | Diego               | Gómez Hernández         | Madrid           |
+| James Wilson     | Laura               | Fernández Díaz          | Barcelona        |
++------------------+---------------------+-------------------------+------------------+
+  ```
+
+  
 
 5. Devuelve el nombre de los clientes que no hayan hecho pagos y el nombre
    de sus representantes junto con la ciudad de la oficina a la que pertenece el
    representante.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+delete from pago where cedula_cliente = 1122334455;
 
-   
+select c.nombre as "Nombre Cliente", e.nombre as 'Nombre Representate', concat(e.apellido1,' ',ifnull(e.apellido2,'')) as 'Apellidos Representante', cd.nombre
+from cliente c
+join empleado e on e.cedula = c.cedula_empleado
+join oficina o on e.id_oficina = o.id
+join ciudad cd on cd.id = o.id_ciudad
+where c.cedula not in (select cedula_cliente from pago);
+
++----------------+---------------------+-------------------------+--------+
+| Nombre Cliente | Nombre Representate | Apellidos Representante | nombre |
++----------------+---------------------+-------------------------+--------+
+| John Doe       | Juan                | González Pérez          | Madrid |
++----------------+---------------------+-------------------------+--------+
+  ```
+
+  
 
 6. Lista la dirección de las oficinas que tengan clientes en Fuenlabrada.
 
    
 
    ```mysql
-   
+   select o.linea_d1
+   from oficina o
+   inner join empleado e on o.id = e.id_oficina
+   inner join cliente c on e.cedula = c.cedula_empleado
+   inner join ciudad ci on o.id_ciudad = ci.id
+   where ci.nombre like 'Fuenlabrada';
    ```
 
    
@@ -750,35 +1155,95 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
 7. Devuelve el nombre de los clientes y el nombre de sus representantes junto
    con la ciudad de la oficina a la que pertenece el representante.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select c.nombre as cliente, 
+       concat(e.nombre, ' ', e.apellido1) as representante, 
+       ci.nombre as ciudad_oficina
+from cliente c
+join empleado e on c.cedula_empleado = e.cedula
+join oficina o on e.id_oficina = o.id
+join ciudad ci on o.id_ciudad = ci.id;
 
-   
++------------------+-------------------+----------------+
+| cliente          | representante     | ciudad_oficina |
++------------------+-------------------+----------------+
+| John Doe         | Juan González     | Madrid         |
+| Jane Smith       | María López       | Barcelona      |
+| Michael Johnson  | Carlos Rodríguez  | Madrid         |
+| Emily Davis      | Ana Sánchez       | Barcelona      |
+| William Martinez | Pedro Martín      | Madrid         |
+| Sarah Brown      | Sara Díaz         | Barcelona      |
+| David Wilson     | Luis Ruiz         | Madrid         |
+| Olivia Taylor    | Elena Pérez       | Barcelona      |
+| Emma Anderson    | Diego Gómez       | Madrid         |
+| James Wilson     | Laura Fernández   | Barcelona      |
++------------------+-------------------+----------------+
+  ```
+
+  
 
 8. Devuelve un listado con el nombre de los empleados junto con el nombre
    de sus jefes.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select e1.nombre as empleado, 
+       concat(e2.nombre, ' ', e2.apellido1) as jefe
+from empleado e1
+left join empleado e2 on e1.jefe = e2.cedula;
 
-   
++----------+-------------------+
+| empleado | jefe              |
++----------+-------------------+
+| Juan     | NULL              |
+| María    | Juan González     |
+| Carlos   | Juan González     |
+| Ana      | Juan González     |
+| Pedro    | María López       |
+| Sara     | María López       |
+| Luis     | Juan González     |
+| Elena    | Juan González     |
+| Diego    | Carlos Rodríguez  |
+| Laura    | Carlos Rodríguez  |
++----------+-------------------+
+  ```
+
+  
 
 9. Devuelve un listado que muestre el nombre de cada empleados, el nombre
    de su jefe y el nombre del jefe de sus jefe.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
+select e1.nombre as empleado,
+       concat(e2.nombre, ' ', e2.apellido1) as jefe,
+       concat(e3.nombre, ' ', e3.apellido1) as jefe_de_jefe
+from empleado e1
+left join empleado e2 on e1.jefe = e2.cedula
+left join empleado e3 on e2.jefe = e3.cedula;
 
-   
+
++----------+-------------------+----------------+
+| empleado | jefe              | jefe_de_jefe   |
++----------+-------------------+----------------+
+| Juan     | NULL              | NULL           |
+| María    | Juan González     | NULL           |
+| Carlos   | Juan González     | NULL           |
+| Ana      | Juan González     | NULL           |
+| Pedro    | María López       | Juan González  |
+| Sara     | María López       | Juan González  |
+| Luis     | Juan González     | NULL           |
+| Elena    | Juan González     | NULL           |
+| Diego    | Carlos Rodríguez  | Juan González  |
+| Laura    | Carlos Rodríguez  | Juan González  |
++----------+-------------------+----------------+
+  ```
+
+  
 
 10. Devuelve el nombre de los clientes a los que no se les ha entregado a
     tiempo un pedido.
@@ -786,124 +1251,208 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
     ```mysql
+    select distinct c.nombre
+    from cliente c
+    left join pedido p on c.cedula = p.cedula_cliente
+    where p.fecha_entrega > p.fecha_esperada or p.fecha_entrega is null;
     
+    +------------------+
+    | nombre           |
+    +------------------+
+    | John Doe         |
+    | Jane Smith       |
+    | Michael Johnson  |
+    | Emily Davis      |
+    | William Martinez |
+    | Sarah Brown      |
+    | David Wilson     |
+    | Olivia Taylor    |
+    | Emma Anderson    |
+    | James Wilson     |
+    +------------------+
     ```
 
     
 
 11. Devuelve un listado de las diferentes gamas de producto que ha comprado
     cada cliente.
+
+    
+
+    ```mysql
+    select distinct c.nombre, gp.descripcion_txt
+    from cliente c
+     join pedido pd on c.cedula = pd.cedula_cliente
+     join detalle_pedido dp on pd.id = dp.id_pedido
+     join producto p on dp.id_producto = p.id
+     join gamma_producto gp on p.id_gamma_producto = gp.id;
+    
+    
+    +------------------+-----------------+
+    | nombre           | descripcion_txt |
+    +------------------+-----------------+
+    | John Doe         | Electrónica     |
+    | Jane Smith       | Ropa            |
+    | Michael Johnson  | Hogar           |
+    | Emily Davis      | Electrónica     |
+    | William Martinez | Ropa            |
+    | Sarah Brown      | Hogar           |
+    | David Wilson     | Electrónica     |
+    | Olivia Taylor    | Ropa            |
+    | Emma Anderson    | Hogar           |
+    | James Wilson     | Electrónica     |
+    +------------------+-----------------+
+    ```
+
+    
+
     Consultas multitabla (Composición externa)
     Resuelva todas las consultas utilizando las cláusulas LEFT JOIN, RIGHT JOIN, NATURAL
     LEFT JOIN y NATURAL RIGHT JOIN.
 
     
 
-    ```mysql
-    
-    ```
+12. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.
 
-    
+   
 
-12. Devuelve un listado que muestre solamente los clientes que no han
-    realizado ningún pago.
+   ```mysql
+select c.cedula ,c.nombre
+from cliente c
+left join pago p on c.cedula = p.cedula_cliente
+where p.id is null;
 
-    
+   ```
 
-    ```mysql
-    
-    ```
-
-    
+   
 
 13. Devuelve un listado que muestre solamente los clientes que no han
-    realizado ningún pedido.
+      realizado ningún pedido.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
+select c.cedula, c.nombre
+from cliente c
+left join pedido p on c.cedula = p.cedula_cliente
+where p.id is null;
 
-    
+   ```
+
+   
 
 14. Devuelve un listado que muestre los clientes que no han realizado ningún
-    pago y los que no han realizado ningún pedido.
+      pago y los que no han realizado ningún pedido.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
+SELECT DISTINCT c.cedula, c.nombre, c.linea_d1, c.linea_d2, c.id_ciudad, c.cedula_empleado 
+FROM cliente c 
+LEFT JOIN pago p ON c.cedula = p.cedula_cliente 
+LEFT JOIN pedido pe ON c.cedula = pe.cedula_cliente 
+WHERE p.cedula_cliente IS NULL AND pe.cedula_cliente IS NULL;
 
-    
+   ```
+
+   
 
 15. Devuelve un listado que muestre solamente los empleados que no tienen
-    una oficina asociada.
+      una oficina asociada.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
+select c.cedula, c.nombre, c.linea_d1, c.linea_d2, c.id_ciudad, c.cedula_empleado 
+from cliente c 
+left join pago p on c.cedula = p.cedula_cliente 
+left join pedido pe on c.cedula = pe.cedula_cliente 
+where p.cedula_cliente is null and pe.cedula_cliente is null;
+select cedula, nombre from empleado
+where id_oficina is null;
 
-    
+   ```
+
+   
 
 16. Devuelve un listado que muestre solamente los empleados que no tienen un
-    cliente asociado.
+      cliente asociado.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
+select e.nombre, e.apellido1, e.apellido2
+from empleado e
+left join cliente c on e.cedula = c.cedula_empleado
+where c.cedula_empleado is null;
 
-    
+   ```
+
+   
 
 17. Devuelve un listado que muestre solamente los empleados que no tienen un
-    cliente asociado junto con los datos de la oficina donde trabajan.
+      cliente asociado junto con los datos de la oficina donde trabajan.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
+select e.nombre, e.apellido1, e.apellido2, o.cod_postal, o.linea_d1, o.linea_d2
+from empleado e
+left join cliente c on e.cedula = c.cedula_empleado
+left join oficina o on e.id_oficina = o.id
+where c.cedula is null;
+   ```
 
-    
+   
 
 18. Devuelve un listado que muestre los empleados que no tienen una oficina
-    asociada y los que no tienen un cliente asociado.
+      asociada y los que no tienen un cliente asociado.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
+select e.cedula, e.nombre, e.apellido1, e.apellido2, e.extension, e.puesto, e.email, e.jefe, e.id_oficina
+from empleado e
+left join oficina o on e.id_oficina = o.id
+where o.id is null
 
-    
+union
+
+select e.cedula, e.nombre, e.apellido1, e.apellido2, e.extension, e.puesto, e.email, e.jefe, e.id_oficina
+from empleado e
+right join cliente c on e.cedula = c.cedula_empleado
+where c.cedula_empleado is null;
+
+   ```
+
+   
 
 19. Devuelve un listado de los productos que nunca han aparecido en un
-    pedido.
+      pedido.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
+select p.nombre
+from producto p
+left join detalle_pedido dp on p.id = dp.id_producto
+where dp.id_producto is null;
 
-    
+   ```
+
+   
 
 20. Devuelve un listado de los productos que nunca han aparecido en un
-    pedido. El resultado debe mostrar el nombre, la descripción y la imagen del
-    producto.
+      pedido. El resultado debe mostrar el nombre, la descripción y la imagen del
+      producto.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
 
-    
+   ```
+
+   
 
 21. Devuelve las oficinas donde no trabajan ninguno de los empleados que
     hayan sido los representantes de ventas de algún cliente que haya realizado
@@ -971,26 +1520,26 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
 27. ¿Cuántos pedidos hay en cada estado? Ordena el resultado de forma
-    descendente por el número de pedidos.
+      descendente por el número de pedidos.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
 
-    
+   ```
+
+   
 
 28. Calcula el precio de venta del producto más caro y más barato en una
-    misma consulta.
+      misma consulta.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
 
-    
+   ```
+
+   
 
 29. Calcula el número de clientes que tiene la empresa.
 
@@ -1013,26 +1562,26 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
     
 
 31. ¿Calcula cuántos clientes tiene cada una de las ciudades que empiezan
-    por M?
+      por M?
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
 
-    
+   ```
+
+   
 
 32. Devuelve el nombre de los representantes de ventas y el número de clientes
-    al que atiende cada uno.
+      al que atiende cada uno.
 
-    
+   
 
-    ```mysql
-    
-    ```
+   ```mysql
 
-    
+   ```
+
+   
 
 33. Calcula el número de clientes que no tiene asignado representante de
     ventas.
@@ -1155,79 +1704,79 @@ INSERT INTO detalle_pedido (id_producto, id_pedido, cantidad, precio_unidad, num
    pedidos ha realizado. Tenga en cuenta que pueden existir clientes que no
    han realizado ningún pedido.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
 
-   
+  ```
+
+  
 
 2. Devuelve un listado con los nombres de los clientes y el total pagado por
    cada uno de ellos. Tenga en cuenta que pueden existir clientes que no han
    realizado ningún pago.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
 
-   
+  ```
+
+  
 
 3. Devuelve el nombre de los clientes que hayan hecho pedidos en 2008
    ordenados alfabéticamente de menor a mayor.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
 
-   
+  ```
+
+  
 
 4. Devuelve el nombre del cliente, el nombre y primer apellido de su
    representante de ventas y el número de teléfono de la oficina del                                                                                                                    representante de ventas, de aquellos clientes que no hayan realizado ningún
    pago.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
 
-   
+  ```
+
+  
 
 5. Devuelve el listado de clientes donde aparezca el nombre del cliente, el
    nombre y primer apellido de su representante de ventas y la ciudad donde
    está su oficina.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
 
-   
+  ```
+
+  
 
 6. Devuelve el nombre, apellidos, puesto y teléfono de la oficina de aquellos
    empleados que no sean representante de ventas de ningún cliente.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
 
-   
+  ```
+
+  
 
 7. Devuelve un listado indicando todas las ciudades donde hay oficinas y el
    número de empleados que tiene.
 
-   
+  
 
-   ```mysql
-   
-   ```
+  ```mysql
 
-   
+  ```
+
+  
