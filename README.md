@@ -2032,4 +2032,214 @@ group by e.nombre;
 
   ```
 
+
+
+
+
+
+
+
+### Vistas:
+
+1. Vista para mostrar información de los productos más vendidos:
+
+```sql
+CREATE VIEW top_productos AS
+SELECT id_producto, sum(cantidad) AS total_vendido
+FROM detalle_pedido
+GROUP BY id_producto
+ORDER BY total_vendido DESC
+LIMIT 10;
+```
+
+2. Vista para mostrar los clientes sin representante de ventas:
+
+```sql
+CREATE VIEW clientes_sin_representante AS
+SELECT *
+FROM cliente
+WHERE cedula_empleado IS NULL;
+```
+
+3. Vista para listar los pagos realizados por año:
+
+```sql
+CREATE VIEW pagos_por_anio AS
+SELECT YEAR(fecha) AS anio, SUM(total) AS total_pagado
+FROM pago
+GROUP BY YEAR(fecha);
+```
+
+4. Vista para mostrar los productos con precios por encima de cierto valor:
+
+```sql
+CREATE VIEW productos_caros AS
+SELECT *
+FROM producto
+WHERE precio_venta > 100;
+```
+
+5. Vista para listar los empleados y sus respectivos clientes atendidos:
+
+```sql
+CREATE VIEW empleados_con_clientes AS
+SELECT e.nombre AS nombre_empleado, COUNT(c.cedula) AS total_clientes
+FROM empleado e
+LEFT JOIN cliente c ON e.cedula = c.cedula_empleado
+GROUP BY e.nombre;
+```
+
+6. Vista para mostrar los países y el número de clientes que tienen:
+
+```sql
+CREATE VIEW clientes_por_pais AS
+SELECT p.nombre AS pais, COUNT(c.cedula) AS total_clientes
+FROM pais p
+LEFT JOIN region r ON p.id = r.id_pais
+LEFT JOIN ciudad ciu ON r.id = ciu.id_region
+LEFT JOIN cliente c ON ciu.id = c.id_ciudad
+GROUP BY p.nombre;
+```
+
+7. Vista para listar las oficinas con empleados y sus cargos:
+
+```sql
+CREATE VIEW oficinas_con_empleados AS
+SELECT o.*, e.nombre AS nombre_empleado, e.puesto
+FROM oficina o
+LEFT JOIN empleado e ON o.id = e.id_oficina;
+```
+
+8. Vista para mostrar los productos con inventario bajo:
+
+```sql
+CREATE VIEW productos_inventario_bajo AS
+SELECT *
+FROM producto
+WHERE id IN (
+    SELECT id_producto
+    FROM inventario
+    WHERE stock_actual < 10
+);
+```
+
+9. Vista para listar los clientes con más pedidos:
+
+```sql
+CREATE VIEW clientes_con_mas_pedidos AS
+SELECT c.*, COUNT(p.id) AS total_pedidos
+FROM cliente c
+LEFT JOIN pedido p ON c.cedula = p.cedula_cliente
+GROUP BY c.cedula
+ORDER BY total_pedidos DESC
+LIMIT 10;
+```
+
+10. Vista para mostrar la facturación por mes y año:
+
+```sql
+CREATE VIEW facturacion_mensual AS
+SELECT YEAR(fecha) AS anio, MONTH(fecha) AS mes, SUM(total) AS total_facturado
+FROM pago
+GROUP BY YEAR(fecha), MONTH(fecha);
+```
+
+### Procedimientos almacenados:
+
+1. Procedimiento para insertar un nuevo cliente:
+
+```sql
+CREATE PROCEDURE insertar_cliente(
+    IN p_nombre VARCHAR(100),
+    IN p_apellido1 VARCHAR(100),
+    IN p_apellido2 VARCHAR(100),
+    IN p_linea_d1 VARCHAR(100),
+    IN p_linea_d2 VARCHAR(100),
+    IN p_id_ciudad INT
+)
+BEGIN
+    INSERT INTO cliente (nombre, apellido1, apellido2, linea_d1, linea_d2, id_ciudad)
+    VALUES (p_nombre, p_apellido1, p_apellido2, p_linea_d1, p_linea_d2, p_id_ciudad);
+END;
+```
+
+2. Procedimiento para eliminar un cliente por su cédula:
+
+```sql
+CREATE PROCEDURE eliminar_cliente(
+    IN p_cedula INT
+)
+BEGIN
+    DELETE FROM cliente WHERE cedula = p_cedula;
+END;
+```
+
+3. Procedimiento para modificar el precio de un producto por su ID:
+
+```sql
+CREATE PROCEDURE modificar_precio_producto(
+    IN p_id_producto INT,
+    IN p_precio_venta DOUBLE
+)
+BEGIN
+    UPDATE producto SET precio_venta = p_precio_venta WHERE id = p_id_producto;
+END;
+```
+
+4. Procedimiento para insertar un nuevo pedido:
+
+```sql
+CREATE PROCEDURE insertar_pedido(
+    IN p_fecha_pedido DATE,
+    IN p_fecha_esperada DATE,
+    IN p_fecha_entrega DATE,
+    IN p_comentarios VARCHAR(200),
+    IN p_id_estado_pedido INT,
+    IN p_cedula_cliente INT
+)
+BEGIN
+    INSERT INTO pedido (fecha_pedido, fecha_esperada, fecha_entrega, comentarios, id_estado_pedido, cedula_cliente)
+    VALUES (p_fecha_pedido, p_fecha_esperada, p_fecha_entrega, p_comentarios, p_id_estado_pedido, p_cedula_cliente);
+END;
+```
+
+5. Procedimiento para eliminar un pedido por su ID:
+
+```sql
+CREATE PROCEDURE eliminar_pedido(
+    IN p_id_pedido INT
+)
+BEGIN
+    DELETE FROM pedido WHERE id = p_id_pedido;
+END;
+```
+
+6. Procedimiento para actualizar el stock actual de un producto en el inventario:
+
+```sql
+CREATE PROCEDURE actualizar_stock(
+    IN p_id_producto INT,
+    IN p_cantidad INT
+)
+BEGIN
+    UPDATE inventario SET stock_actual = stock_actual + p_cantidad WHERE id_producto = p_id_producto;
+END;
+```
+
+7. Procedimiento para insertar un nuevo empleado:
+
+```sql
+CREATE PROCEDURE insertar_empleado(
+    IN p_cedula INT,
+    IN p_nombre VARCHAR(100),
+    IN p_apellido1 VARCHAR(100),
+    IN p_apellido2 VARCHAR(100),
+    IN p_extension INT,
+    IN p_puesto VARCHAR(100),
+    IN p_email VARCHAR(100),
+    IN p_jefe INT,
+    IN p_id_oficina INT
+)
+BEGIN
+    INSERT INTO empleado (cedula, nombre, apellido1, apellido2, extension, puesto, email, jefe, id
   
