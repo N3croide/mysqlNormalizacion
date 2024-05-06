@@ -1449,7 +1449,11 @@ where dp.id_producto is null;
    
 
    ```mysql
-
+SELECT p.nombre, p.descripcion, gp.imagen
+FROM producto p
+LEFT JOIN detalle_pedido dp ON p.id = dp.id_producto
+LEFT JOIN gamma_producto gp ON p.id_gamma_producto = gp.id
+WHERE dp.id_producto IS NULL;
    ```
 
    
