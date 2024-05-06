@@ -1465,7 +1465,15 @@ WHERE dp.id_producto IS NULL;
     
 
     ```mysql
-    
+    SELECT DISTINCT o.id, o.cod_postal, o.linea_d1, o.linea_d2
+    FROM oficina o
+	LEFT JOIN empleado e ON o.id = e.id_oficina
+	LEFT JOIN cliente c ON e.cedula = c.cedula_empleado
+	LEFT JOIN pedido p ON c.cedula = p.cedula_cliente
+	LEFT JOIN detalle_pedido dp ON p.id = dp.id_pedido
+	LEFT JOIN producto pr ON dp.id_producto = pr.id
+	LEFT JOIN gamma_producto gp ON pr.id_gamma_producto = gp.id
+	WHERE gp.descripcion_txt = 'Frutales' AND e.cedula IS NULL;
     ```
 
     
@@ -1476,7 +1484,12 @@ WHERE dp.id_producto IS NULL;
     
 
     ```mysql
-    
+    select distinct cl.cedula, cl.nombre, cl.linea_d1, cl.linea_d2
+    from cliente cl
+    left join pedido pe ON cl.cedula = pe.cedula_cliente
+    left join pago pa ON cl.cedula = pa.cedula_cliente
+    where pe.id is not null and pa.id is null;
+
     ```
 
     
@@ -1488,7 +1501,12 @@ WHERE dp.id_producto IS NULL;
     
 
     ```mysql
-    
+    select e.cedula, e.nombre, e.apellido1, e.apellido2, j.nombre as nombre_jefe
+	from empleado e
+	left join empleado j on e.jefe = j.cedula
+	left join cliente c on e.cedula = c.cedula_empleado
+	where c.cedula_empleado is null;
+ 
     ```
 
     
@@ -1498,7 +1516,13 @@ WHERE dp.id_producto IS NULL;
     
 
     ```mysql
-    
+    select count(*) as total_empleados from empleado;
+	+-----------------+
+	| total_empleados |
+	+-----------------+
+	|              10 |
+	+-----------------+
+
     ```
 
     
