@@ -29,7 +29,7 @@ create table ciudad(
 	id int auto_increment primary key,
 	nombre varchar(100) not null,
 	id_region int  not null,
-	constraint FK_id_region foreign key(id_region) references 		region(id)
+	constraint FK_id_region foreign key(id_region) references region(id)
 );
 
 create table oficina(
