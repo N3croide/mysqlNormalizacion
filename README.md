@@ -2242,4 +2242,57 @@ CREATE PROCEDURE insertar_empleado(
 )
 BEGIN
     INSERT INTO empleado (cedula, nombre, apellido1, apellido2, extension, puesto, email, jefe, id
-  
+
+_oficina)
+    VALUES (p_cedula, p_nombre, p_apellido1, p_apellido2, p_extension, p_puesto, p_email, p_jefe, p_id_oficina);
+END;
+```
+
+8. Procedimiento para eliminar un empleado por su cédula:
+
+```sql
+CREATE PROCEDURE eliminar_empleado(
+    IN p_cedula INT
+)
+BEGIN
+    DELETE FROM empleado WHERE cedula = p_cedula;
+END;
+```
+
+9. Procedimiento para actualizar la información de un cliente por su cédula:
+
+```sql
+CREATE PROCEDURE actualizar_cliente(
+    IN p_cedula INT,
+    IN p_nombre VARCHAR(100),
+    IN p_apellido1 VARCHAR(100),
+    IN p_apellido2 VARCHAR(100),
+    IN p_linea_d1 VARCHAR(100),
+    IN p_linea_d2 VARCHAR(100),
+    IN p_id_ciudad INT
+)
+BEGIN
+    UPDATE cliente
+    SET nombre = p_nombre,
+        apellido1 = p_apellido1,
+        apellido2 = p_apellido2,
+        linea_d1 = p_linea_d1,
+        linea_d2 = p_linea_d2,
+        id_ciudad = p_id_ciudad
+    WHERE cedula = p_cedula;
+END;
+```
+
+10. Procedimiento para actualizar el precio de todos los productos de una gama específica:
+
+```sql
+CREATE PROCEDURE actualizar_precio_gama_producto(
+    IN p_id_gamma_producto INT,
+    IN p_nuevo_precio DOUBLE
+)
+BEGIN
+    UPDATE producto
+    SET precio_venta = p_nuevo_precio
+    WHERE id_gamma_producto = p_id_gamma_producto;
+END;
+```
